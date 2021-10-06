@@ -1,12 +1,16 @@
 import os
 
-# os.system("pip3 install discord")
-# os.system("pip3 install requests")
-# os.system("pip3 install pytz")
-# os.system("pip3 install psutil")
-# os.system("pip3 install GPUtil")
-# os.system("pip3 install tabulate")
-# os.system("pip3 install pillow")
+if os.name != "nt":
+    os.system("pip3 install discord")
+    os.system("pip3 install requests")
+    os.system("pip3 install pytz")
+    os.system("pip3 install psutil")
+    os.system("pip3 install GPUtil")
+    os.system("pip3 install tabulate")
+    os.system("pip3 install pillow")
+
+else:
+    print("naa")
 
 
 import asyncio
@@ -48,7 +52,7 @@ def exception_error(exception, location):
     open("log.txt", 'w').write(new_data)
 
 def get_meme():
-    subred = ['SaimanSays', 'memes', 'india', 'IncredibleIndia', 'bakchodi', 'indianpeoplequora', 'unitedstatesofindia']
+    subred = ['SaimanSays', 'memes', 'bakchodi', 'IndianDankMemer']
 
     link = [f'http://aio-api-discord.herokuapp.com/reddit/hot?subreddit={choice(subred)}']#, f'http://aio-api-discord.herokuapp.com/reddit/new?subreddit={choice(subred)}', f'http://aio-api-discord.herokuapp.com/reddit/random?subreddit={choice(subred)}']
 
@@ -366,111 +370,6 @@ async def system_info(ctx, embed : bool = True):
 
             await ctx.send(tabulate(list_gpus, headers=("id", "name", "load", "free memory", "used memory", "total memory",
                                    "temperature", "uuid")))
-
-'''
-@client.command(aliases = ['l', 'lyrc', 'lyric']) # adding aliases to the command so they they can be triggered with other names
-async def lyrics(ctx, *, search = None):
-    """A command to find lyrics easily!"""
-    if not search: # if user hasnt given an argument, throw a error and come out of the command
-        embed = discord.Embed(
-            title = "No search argument!",
-            description = "You havent entered anything, so i couldnt find lyrics!"
-        )
-        return await ctx.reply(embed = embed)
-        # ctx.reply is available only on discord.py version 1.6.0, if you have a version lower than that use ctx.send
-    
-    song = urllib.parse.quote(search) # url-encode the song provided so it can be passed on to the API
-    
-    async with aiohttp.ClientSession() as lyricsSession:
-        async with lyricsSession.get(f'https://some-random-api.ml/lyrics?title={song}') as jsondata: # define jsondata and fetch from API
-            if not 300 > jsondata.status >= 200: # if an unexpected HTTP status code is recieved from the website, throw an error and come out of the command
-                return await ctx.send(f'Recieved poor status code of {jsondata.status}')
-
-            lyricsData = await jsondata.json() # load the json data into its json form
-
-    error = lyricsData.get('error')
-    if error: # checking if there is an error recieved by the API, and if there is then throwing an error message and returning out of the command
-        return await ctx.send(f'Recieved unexpected error: {error}')
-
-    songLyrics = lyricsData['lyrics'] # the lyrics
-    songArtist = lyricsData['author'] # the author's name
-    songTitle = lyricsData['title'] # the song's title
-    songThumbnail = lyricsData['thumbnail']['genius'] # the song's picture/thumbnail
-
-    # sometimes the song's lyrics can be above 4096 characters, and if it is then we will not be able to send it in one single message on Discord due to the character limit
-    # this is why we split the song into chunks of 4096 characters and send each part individually
-    for chunk in textwrap.wrap(songLyrics, 4096, replace_whitespace = False):
-        embed = discord.Embed(
-            title = songTitle,
-            description = chunk,
-            color = discord.Color.blurple(),
-            timestamp = datetime.utcnow()
-        )
-        embed.set_thumbnail(url = songThumbnail)
-        await ctx.send(embed = embed)'''
-
-@client.command(aliases=["pixel", 'p'])
-async def pixelify(ctx, *,  member : commands.MemberConverter=None):
-    if member == None:
-        member = ctx.author
-
-    myfile = requests.get(member.avatar_url)
-    open("avatar.png", 'wb').write(myfile.content)
-
-    avatar = Image.open('avatar.png')
-    pixeled = avatar.convert("1")
-    pixeled.save('avatar.png')
-
-    await ctx.send(file=discord.File('avatar.png'))
-
-@client.command()
-async def invert(ctx, *,  member : commands.MemberConverter=None):
-    if member == None:
-        member = ctx.author
-
-    myfile = requests.get(member.avatar_url_as(format='png'))
-    open("avatar.png", 'wb').write(myfile.content)
-
-    ava = Image.open('avatar.png')
-    avatar = ava.convert("RGB")
-    invert = ImageOps.invert(avatar)
-    
-    invert.save('invert.png')
-
-    await ctx.send(file=discord.File('invert.png'))
-
-@client.command()
-async def blur(ctx, *,  member : commands.MemberConverter=None):
-    if member == None:
-        member = ctx.author
-
-    myfile = requests.get(member.avatar_url_as(format='png'))
-    open("avatar.png", 'wb').write(myfile.content)
-
-    ava = Image.open('avatar.png')
-    avatar = ava.convert("RGB")
-    blur = avatar.filter(ImageFilter.GaussianBlur(radius=10))
-    blur.save('blur.png')
-
-    await ctx.send(file=discord.File('blur.png'))
-
-@client.command()
-async def ascii(ctx, *,  member : commands.MemberConverter=None):
-    if member == None:
-        member = ctx.author
-
-    myfile = requests.get(member.avatar_url_as(format='png'))
-    open("avatar.png", 'wb').write(myfile.content)
-
-    arting.main()
-
-    location = 'ascii.txt'
-    ascii = open(location, 'r').read()
-    myobj = {'api_dev_key': 'PI2u64XcoQ_BtZtBDsFTJ_P6F_cU1TlC', 'api_paste_code': ascii, 'api_paste_private': '0', 'api_paste_name': 'ascii.txt', 'api_option': 'paste', 'api_paste_expire_date': '1D'}
-    x = requests.post('https://pastebin.com/api/api_post.php', data = myobj)
-
-    await ctx.send(x.text, file=discord.File('drawn_image.jpg'))
-
 
 @client.event
 async def on_message(m):
