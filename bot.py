@@ -7,11 +7,9 @@ if os.name != "nt":
     os.system("pip3 install psutil")
     os.system("pip3 install GPUtil")
     os.system("pip3 install tabulate")
-    os.system("pip3 install pillow")
 
 else:
     print("naa")
-
 
 import asyncio
 import discord
@@ -26,18 +24,10 @@ import platform
 import psutil
 import GPUtil
 from tabulate import tabulate
-from PIL import Image, ImageChops, ImageFilter, ImageOps
-#import textwrap
-#import urllib
-#import aiohttp
-import topgg
-import arting
 
 #variables
 intents = discord.Intents().all()
 client = commands.Bot(command_prefix = "_", intents=intents)
-
-
 
 def time():
     pst = pytz.timezone('Asia/Kolkata')
@@ -45,9 +35,9 @@ def time():
     return timestamp
 
 def exception_error(exception, location):
-    e_data = open("log.txt", 'r').read()
-    write_data = f"{time()} ~ [{location}]{exception}"
+    write_data = f"{time()} ~ [{location}] {exception}"
     print(write_data)
+    e_data = open("log.txt", 'r').read()
     new_data = f"{e_data}\n{write_data}"
     open("log.txt", 'w').write(new_data)
 
@@ -128,31 +118,15 @@ async def meme():
     embed.set_footer(text=f'Meme by {data[4]} | 👍 {data[5]}')
     await channel.send(embed=embed, file=file)
 
-"""
-    async with aiohttp.ClientSession() as session:
-        async with session.get("https://cdn.discordapp.com/attachments/795547584604143646/870700034163875860/0001-0250.mp4") as af:
-            if 300 > af.status >= 200:
-                fp = io.BytesIO(await af.read())
-                file = discord.File(fp, f"horny.png")
-                em = discord.Embed(title="Test", color=0xf1f1f1)
-                em.set_image(url=f"attachment://horny.png")
-                await channel.send(embed=em, file=file)
-            else:
-                await channel.send('')
-        await session.close()
-
-
- PART 1
-    print("ug")
-    embed = discord.Embed(title = data[0], url = data[3], description = data[1])
-    try:
-        embed.set_image(url = data[2])
-
-    except Exception as e:
-        print(f"##{e}")
-
-    await channel.send(embed = embed)
-"""
+@tasks.loop(seconds=10)
+async def edit_message():
+    channel = client.get_channel(853545849261916181)
+    msg_id = 895290072600035360
+    msg = await channel.fetch_message(msg_id)
+    guild = client.get_guild(853536444278767626)
+    nevada = guild.get_member(797066760229617697)
+    berlin = guild.get_member(854406530576023604)
+    await msg.edit(content=f'__Status__\nNevada: {str(nevada.status).title()}\nAlaska: Me always online, never offline\nBerlin: {str(berlin.status).title()}')
 
 @client.event
 async def on_dbl_vote(data):
@@ -190,6 +164,7 @@ async def on_ready():
 
     await channel.send(embed=embed)
     print(f'We have logged in as {client.user}')
+    edit_message.start()
 
 @client.event
 async def on_message_delete(message):
@@ -371,6 +346,15 @@ async def system_info(ctx, embed : bool = True):
             await ctx.send(tabulate(list_gpus, headers=("id", "name", "load", "free memory", "used memory", "total memory",
                                    "temperature", "uuid")))
 
+@client.command(
+    aliases=["sm", "send"]
+)
+@commands.is_owner()
+async def send_message(ctx, channel: commands.TextChannelConverter, *, message):
+    print(channel)
+    #channel = client.get_channel(channel.id)
+    await channel.send(message)
+
 @client.event
 async def on_message(m):
     if m.author == client.user:
@@ -448,4 +432,4 @@ async def on_message(m):
 
     await client.process_commands(m)
 
-client.run('NzkzMDkxNjk3ODI3MTE5MTM0.X-nOMw.0Hw7xiD8ae0v7kU0b6o3amLcFkw')
+client.run('NzkzMDkxNjk3ODI3MTE5MTM0.X-nOMw.NJ4y3P78QLcKn-zj0y1ay4-xHco')
