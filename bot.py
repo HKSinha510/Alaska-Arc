@@ -28,6 +28,7 @@ from tabulate import tabulate
 #variables
 intents = discord.Intents().all()
 client = commands.Bot(command_prefix = "_", intents=intents)
+words = ['fuck', 'dick', 'shit', 'bastard', 'dickhead', 'asshole', 'penis', 'vagina', 'chut', 'maa ka chut', 'gand ', 'dead chat', 'dead server', 'ded chat', 'ded server', 'bitch', 'n word', 'harami']
 
 def time():
     pst = pytz.timezone('Asia/Kolkata')
@@ -125,12 +126,14 @@ async def edit_message():
     msg = await channel.fetch_message(msg_id)
     guild = client.get_guild(853536444278767626)
     nevada = guild.get_member(797066760229617697)
+    nevada_premium = guild.get_member(896093862207049750)
     berlin = guild.get_member(854406530576023604)
-    await msg.edit(content=f'__Status__\nNevada: {str(nevada.status).title()}\nAlaska: Me always online, never offline\nBerlin: {str(berlin.status).title()}')
+    await msg.edit(content=f'__Status__\nNevada: {str(nevada.status).title()}\nNevada Premium: {str(nevada_premium.status).title()}\nAlaska: Me always online, never offline\nBerlin: {str(berlin.status).title()}')
 
-@client.event
-async def on_dbl_vote(data):
-    print(data)
+@tasks.loop(minutes=120)
+async def bump_reminder():
+    channel = client.get_channel(860573666974761030)
+    await channel.send("<@&795538188655394817>\nTime for a bump\nPls write `!d bump`")
 
 @client.event
 async def on_connect():
@@ -175,6 +178,18 @@ async def on_message_delete(message):
 @client.event
 async def on_message_edit(before, after):
     channel = client.get_channel(835206762936008745)
+
+    for word in words:
+        if word in after.content.lower():
+            if after.author.id != 720308779220074557:
+                if after.author.id != 745849641395814521:
+                    await after.channel.trigger_typing()
+                    await after.delete()
+                    await after.channel.send(f"Holy frick, stop abusing {after.author.mention}")
+                    non = after.content.replace(word, "")
+                    if non != "":
+                        await after.channel.send(f"Sentence without abuse\n```ml\n{non}\n```")
+
     embed = discord.Embed(title = "Message Edited", description = f"A Message from {before.author.mention}[{before.author}] has been edited in {before.channel.mention}[{before.channel}]")
     embed.add_field(name = "Before", value = f"```ml\n{before.content}\n```")
     embed.add_field(name = "After", value = f"```ml\n{after.content}\n```")
@@ -183,7 +198,6 @@ async def on_message_edit(before, after):
 @client.event
 async def on_reaction_add(reaction, user):
     pass
-
 
 @client.event
 async def on_command_error(ctx, error):
@@ -360,13 +374,15 @@ async def on_message(m):
     if m.author == client.user:
         return
 
+    if m.author.bot:
+        return
+
     if isinstance(m.channel, discord.channel.DMChannel):
         channel = client.get_channel(815283467817975818)
         embed = discord.Embed(title = "DM", description = f"Just recieved a dm from {m.author.mention}[{m.author}]:\n```ml\n{m.content}\n```")
         await channel.send(embed = embed)
 
     ms = m.content.lower()
-    words = ['fuck', 'dick', 'shit', 'bastard', 'dickhead', 'asshole', 'penis', 'vagina', 'chut', 'maa ka chut', 'gand ', 'dead chat', 'dead server', 'ded chat', 'ded server', 'bitch', 'n word']
     
     for word in words:
         if word in ms:
@@ -378,6 +394,9 @@ async def on_message(m):
                     non = m.content.replace(word, "")
                     if non != "":
                         await m.channel.send(f"Sentence without abuse\n```ml\n{non}\n```")
+
+    if m.content.lower() == '!d bump':
+        bump_reminder.start()
 
     if m.channel.id == 861241740043485244:
         channel = client.get_channel(838479073675444264)
