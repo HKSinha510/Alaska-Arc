@@ -119,7 +119,7 @@ async def meme():
     embed.set_footer(text=f'Meme by {data[4]} | 👍 {data[5]}')
     await channel.send(embed=embed, file=file)
 
-@tasks.loop(seconds=10)
+@tasks.loop(hours=1)
 async def edit_message():
     channel = client.get_channel(853545849261916181)
     msg_id = 895290072600035360
@@ -249,6 +249,75 @@ async def start_error(ctx, error):
         await ctx.trigger_typing()
         await asyncio.sleep(2)
         await ctx.send(",...............................")
+
+@client.command()
+@has_permissions(administrator=True)
+async def ban(ctx, member: commands.MemberConverter, *, reason = ""):
+    await member.ban(reason = reason)
+    await ctx.send(f"<@{member.id}> has been banned by {ctx.author.mention}")
+
+@ban.error
+async def ban_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send("No ||s||perms")
+
+@client.command()
+@has_permissions(administrator=True)
+async def kick(ctx, member: commands.MemberConverter, *, reason = ""):
+    if ctx.author.id != 745849641395814521:
+        if ctx.author.id != 720308779220074557:
+            await ctx.send("looks like you don't hav perms")
+            await ctx.send("but I have")
+            await ctx.send("I can try to kick the person just for you")
+            await ctx.send("but it is very *risky* as if something goes wrong, your and my life will be in danger")
+            msg = await ctx.send("If you hav courage, then react with 🇾, to cancel this operation, react with 🇳")
+
+            await msg.add_reaction("🇾")
+            await msg.add_reaction("🇳")
+
+            def check(reaction, user):
+                return user == ctx.author and str(reaction.emoji) in ["🇾", "🇳"]
+
+            while True:
+                try:
+                    reaction, user = await client.wait_for("reaction_add", timeout=60, check=check)
+            # waiting for a reaction to be added - times out after x seconds, 60 in this
+            # example
+
+                    if str(reaction.emoji) == "🇾":
+                        await ctx.send("OK, now i'm starting the procedure, \nI'll keep posting the progress in your DM")
+                        await msg.remove_reaction(reaction, user)
+
+                        dm = await ctx.author.create_dm()
+                        await dm.send("got the account perm")
+                        await dm.send("fixed roles, now i'm at top")
+                        await dm.send("got admin perms")
+                        await dm.send("ready to kick")
+
+                        await asyncio.sleep(2)
+                        await dm.send("Fuck")
+                        await dm.send("messed up")
+
+                        await asyncio.sleep(2)
+                        await dm.send("https://discord.gg/awY79frb35")
+
+                        await ctx.author.kick(reason=reason)
+                        print("author got kicked")
+
+                    elif str(reaction.emoji) == "🇳":
+                        await msg.remove_reaction(reaction, user)
+
+                    else:
+                        await msg.remove_reaction(reaction, user)
+
+                except asyncio.TimeoutError:
+                    await msg.edit(content = "Times up")
+                    break
+
+    else:
+        await member.kick(reason = reason)
+        await ctx.send(f"<@{member.id}> has been kicked by {ctx.author.mention}")
+
 
 @client.command(aliases=["sd"])
 @has_permissions(administrator=True)
