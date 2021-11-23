@@ -461,9 +461,7 @@ async def info(ctx):
     else:
         emoji = ""
 
-    await ctx.send(f"Here it is\n Boot Time - {boot}\nBattery{emoji} - {bat_percentage}\n\nCPU - {total_cores}\nFrequency - {current_frequency}\nUsage - {cpu_usage}%\n\nMemory - {total}\nUsage - {percentage}%\n\nDisk read - {read}\n Disk write - {write}")
-
-    #{ "boot": "2021/11/20 10:29:34", "bat_percentage": "97%", "power": "True", "total_cores": "8", "current_frequency": "2100.00 Mhz", "cpu_usage": "12.9%", "total": "5.88GB", "percentage": "78.0", "read": "62.37GB", "write": "36.60GB" }
+    await ctx.send(f"Here it is\nBoot Time - {boot}\nBattery{emoji} - {bat_percentage}\n\nCPU - {total_cores}\nFrequency - {current_frequency}\nUsage - {cpu_usage}%\n\nMemory - {total}\nUsage - {percentage}%\n\nDisk read - {read}\nDisk write - {write}")
 
 @client.event
 async def on_message(m):
