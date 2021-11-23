@@ -438,6 +438,33 @@ async def send_message(ctx, channel: commands.TextChannelConverter, *, message):
     #channel = client.get_channel(channel.id)
     await channel.send(message)
 
+@client.command(
+    aliases = ["extension 1", "ext1"]
+)
+async def info(ctx):
+    response = requests.get("https://py-flask-server-for-alaska-intigration.hardikkumarkuma.repl.co/alaska")
+    json_data = json.loads(response.text)
+    boot = json_data['boot']
+    bat_percentage = json_data['bat_percentage']
+    power = json_data['power']
+    total_cores = json_data['total_cores']
+    current_frequency = json_data['current_frequency']
+    cpu_usage = json_data['cpu_usage']
+    total = json_data['total']
+    percentage = json_data['percentage']
+    read = json_data['read']
+    write = json_data['write']
+    
+    if power == "True":
+        emoji = "🔋"
+
+    else:
+        emoji = ""
+
+    await ctx.send(f"Here it is\n Boot Time - {boot}\nBattery{emoji} - {bat_percentage}\n\nCPU - {total_cores}\nFrequency - {current_frequency}\nUsage - {cpu_usage}%\n\nMemory - {total}\nUsage - {percentage}%\n\nDisk read - {read}\n Disk write - {write}")
+
+    #{ "boot": "2021/11/20 10:29:34", "bat_percentage": "97%", "power": "True", "total_cores": "8", "current_frequency": "2100.00 Mhz", "cpu_usage": "12.9%", "total": "5.88GB", "percentage": "78.0", "read": "62.37GB", "write": "36.60GB" }
+
 @client.event
 async def on_message(m):
     if m.author == client.user:
