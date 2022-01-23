@@ -28,7 +28,7 @@ from tabulate import tabulate
 #variables
 intents = discord.Intents().all()
 client = commands.Bot(command_prefix = "_", intents=intents)
-words = ['fuck', 'dick', 'shit', 'bastard', 'dickhead', 'asshole', 'penis', 'vagina', 'chut', 'maa ka chut', 'gand ', 'dead chat', 'dead server', 'ded chat', 'ded server', 'bitch', 'n word', 'harami']
+words = ['fuck', 'dick', 'shit', 'bastard', 'dickhead', 'asshole', 'penis', 'vagina', 'chut', 'maa ka chut', 'gand ', 'dead chat', 'dead server', 'ded chat', 'ded server', 'bitch', 'n word', 'harami', 'kutta', 'kutte']
 
 def time():
     pst = pytz.timezone('Asia/Kolkata')
@@ -36,16 +36,12 @@ def time():
     return timestamp
 
 def exception_error(exception, location):
-    write_data = f"{time()} ~ [{location}] {exception}"
-    print(write_data)
-    e_data = open("log.txt", 'r').read()
-    new_data = f"{e_data}\n{write_data}"
-    open("log.txt", 'w').write(new_data)
+    print(exception)
 
 def get_meme():
-    subred = ['SaimanSays', 'memes', 'bakchodi', 'IndianDankMemer']
+    subred = ['SaimanSays', 'memes', 'bakchodi', 'IndianDankMemes', 'me_irl']
 
-    link = [f'http://aio-api-discord.herokuapp.com/reddit/hot?subreddit={choice(subred)}']#, f'http://aio-api-discord.herokuapp.com/reddit/new?subreddit={choice(subred)}', f'http://aio-api-discord.herokuapp.com/reddit/random?subreddit={choice(subred)}']
+    link = [f'https://meme-api.herokuapp.com/gimme/{choice(subred)}']
 
     #RESPONSE = {"title":"","description":"","url":"*.jpg","post_url":"redd.it","author":"","score":182,"spoilers":true,"nsfw":false}
 
@@ -97,26 +93,39 @@ async def morning_quote():
 async def meme():
     channel = client.get_channel(858690426117816321)
     await channel.trigger_typing()
-    data = get_meme()
 
-    while data[0] == "API Error":
-        exception_error("Recieved API Error", "Line 89, Task loop meme()")
+    subReddit = ['SaimanSays', 'memes', 'bakchodi', 'IndianDankMemes', 'me_irl']
 
-        data = get_meme()
+    link = f'https://meme-api.herokuapp.com/gimme/{choice(subReddit)}'
 
-    print(data)
-    myfile = requests.get(data[2])
-    open("meme.png", 'wb').write(myfile.content)
-
-    file = discord.File("meme.png")
-    embed = discord.Embed(title = data[0], url = data[3], description = data[1])
     try:
-        embed.set_image(url="attachment://meme.png")
+        response = requests.get(link)
+        json_data = json.loads(response.text)
+        title = json_data['title']
+    #description = json_data['description']
+        url = json_data['url']
+        postLink = json_data['postLink']
+        author = json_data['author']
+        votes = json_data['ups']
+    #spoilers = json_data['spoilers']
+
+    except:
+        embed = discord.Embed(title = "l")
+
+    #print(data)
+    myfile = requests.get(url)
+    extension = url[-3:]
+    open(f"meme.{extension}", 'wb').write(myfile.content)
+
+    file = discord.File(f"meme.{extension}")
+    embed = discord.Embed(title = title, url = postLink, description = "** **")
+    try:
+        embed.set_image(url=f"attachment://meme.{extension}")
 
     except Exception as e:
         exception_error(e, f"Line 89, Can't set image in meme's embed")
 
-    embed.set_footer(text=f'Meme by {data[4]} | 👍 {data[5]}')
+    embed.set_footer(text=f'Meme by {author} | 👍 {votes}')
     await channel.send(embed=embed, file=file)
 
 @tasks.loop(hours=1)
@@ -146,7 +155,7 @@ async def on_disconnect():
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name = 'Only on this server, LMAO'))
+    await client.change_presence(activity=discord.Game(name = 'catch-catch with wall'))
     channel = client.get_channel(835206762936008745)  #Alaska-Log 835206762936008745
 
     uname = platform.uname()
@@ -191,10 +200,28 @@ async def on_message_edit(before, after):
                     if non != "":
                         await after.channel.send(f"Sentence without abuse\n```ml\n{non}\n```")
 
+    a = after.content
+    b = before.content
+
     embed = discord.Embed(title = "Message Edited", description = f"A Message from {before.author.mention}[{before.author}] has been edited in {before.channel.mention}[{before.channel}]")
-    embed.add_field(name = "Before", value = f"```ml\n{before.content}\n```")
-    embed.add_field(name = "After", value = f"```ml\n{after.content}\n```")
-    await channel.send(embed = embed)
+    embed.add_field(name = "Before", value = f"```ml\n{b}\n```")
+    embed.add_field(name = "After", value = f"```ml\n{a}\n```")
+    takeOne = a.replace(b, "")
+    takeTwo = b.replace(a, "")
+    print(takeOne)
+    print(takeTwo) 
+    if takeOne == a:
+        rep = takeTwo
+
+    elif takeTwo == b:
+        rep = takeOne
+
+    else:
+        rep = takeOne
+
+    if rep != "":
+        embed.add_field(name = "Difference", value = f"```ml\n{rep}\n```", inline=False)
+        await channel.send(embed = embed)  
 
 @client.event
 async def on_reaction_add(reaction, user):
@@ -265,60 +292,7 @@ async def ban_error(ctx, error):
 @client.command()
 @has_permissions(administrator=True)
 async def kick(ctx, member: commands.MemberConverter, *, reason = ""):
-    if ctx.author.id != 745849641395814521:
-        if ctx.author.id != 720308779220074557:
-            await ctx.send("looks like you don't hav perms")
-            await ctx.send("but I have")
-            await ctx.send("I can try to kick the person just for you")
-            await ctx.send("but it is very *risky* as if something goes wrong, your and my life will be in danger")
-            msg = await ctx.send("If you hav courage, then react with 🇾, to cancel this operation, react with 🇳")
-
-            await msg.add_reaction("🇾")
-            await msg.add_reaction("🇳")
-
-            def check(reaction, user):
-                return user == ctx.author and str(reaction.emoji) in ["🇾", "🇳"]
-
-            while True:
-                try:
-                    reaction, user = await client.wait_for("reaction_add", timeout=60, check=check)
-            # waiting for a reaction to be added - times out after x seconds, 60 in this
-            # example
-
-                    if str(reaction.emoji) == "🇾":
-                        await ctx.send("OK, now i'm starting the procedure, \nI'll keep posting the progress in your DM")
-                        await msg.remove_reaction(reaction, user)
-
-                        dm = await ctx.author.create_dm()
-                        await dm.send("got the account perm")
-                        await dm.send("fixed roles, now i'm at top")
-                        await dm.send("got admin perms")
-                        await dm.send("ready to kick")
-
-                        await asyncio.sleep(2)
-                        await dm.send("Fuck")
-                        await dm.send("messed up")
-
-                        await asyncio.sleep(2)
-                        await dm.send("https://discord.gg/awY79frb35")
-
-                        await ctx.author.kick(reason=reason)
-                        print("author got kicked")
-
-                    elif str(reaction.emoji) == "🇳":
-                        await msg.remove_reaction(reaction, user)
-
-                    else:
-                        await msg.remove_reaction(reaction, user)
-
-                except asyncio.TimeoutError:
-                    await msg.edit(content = "Times up")
-                    break
-
-    else:
-        await member.kick(reason = reason)
-        await ctx.send(f"<@{member.id}> has been kicked by {ctx.author.mention}")
-
+    await ctx.send("lockdown hai, kick kidhar karega?")
 
 @client.command(aliases=["sd"])
 @has_permissions(administrator=True)
@@ -491,7 +465,10 @@ async def on_message(m):
                         await m.channel.send(f"Sentence without abuse\n```ml\n{non}\n```")
 
     if m.content.lower() == '!d bump':
-        bump_reminder.start()
+        asyncio.sleep(7200)
+        #channel = client.get_channel(860573666974761030)
+        await m.channel.send("<@&795538188655394817>\nTime for a bump\nPls write `!d bump`")
+        #bump_reminder.start()
 
     if m.channel.id == 861241740043485244:
         channel = client.get_channel(838479073675444264)

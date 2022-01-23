@@ -57,4 +57,7 @@ def check():
     print("no")
 
 if __name__ == "__main__":
-    check()
+    a = "fghjkl;.png"
+    print(a[-3:])
+    #print(take)
+    #check()
