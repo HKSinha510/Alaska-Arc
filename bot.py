@@ -24,6 +24,7 @@ import platform
 import psutil
 import GPUtil
 from tabulate import tabulate
+from PIL import Image
 
 #variables
 intents = discord.Intents().all()
@@ -38,33 +39,6 @@ def time():
 def exception_error(exception, location):
     print(exception)
 
-def get_meme():
-    subred = ['SaimanSays', 'memes', 'bakchodi', 'IndianDankMemes', 'me_irl']
-
-    link = [f'https://meme-api.herokuapp.com/gimme/{choice(subred)}']
-
-    #RESPONSE = {"title":"","description":"","url":"*.jpg","post_url":"redd.it","author":"","score":182,"spoilers":true,"nsfw":false}
-
-    try: 
-        response = requests.get(choice(link))
-        json_data = json.loads(response.text)
-        title = json_data['title']
-        description = json_data['description']
-        url = json_data['url']
-        post_url = json_data['post_url']
-        author = json_data['author']
-        votes = json_data['score']
-        spoilers = json_data['spoilers']
-        data = [title, description, url, post_url, author, votes, spoilers]
-
-    # FORMAT = [title, description, url, post_url, author, votes, spoilers, nsfw]
-
-    except Exception as e:
-        exception_error(e, "Line 48, While fetching meme in def meme()")
-        data = ['API Error', 'error', 'https://cdn.discordapp.com/attachments/795547584604143646/846637578233184256/PicsArt_05-03-10.png', 'https://cdn.discordapp.com/attachments/795547584604143646/846637578233184256/PicsArt_05-03-10.png', "Scam", "0", "True"]
-
-    return data
-
 def get_size(bytes, suffix="B"):
     """
     Scale bytes to its proper format
@@ -77,6 +51,26 @@ def get_size(bytes, suffix="B"):
         if bytes < factor:
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
+
+def average_color(img):
+    width, height = img.size
+
+    r_total = 0
+    g_total = 0
+    b_total = 0
+ 
+    count = 0
+ 
+    for x in range(0, width):
+        for y in range(0, height):
+            r, g, b = img.getpixel((x, y))
+ 
+            r_total += r
+            g_total += g
+            b_total += b
+            count += 1
+ 
+    return (r_total/count, g_total/count, b_total/count)
 
 @tasks.loop(hours=24)
 async def morning_quote():
@@ -118,7 +112,12 @@ async def meme():
     open(f"meme.{extension}", 'wb').write(myfile.content)
 
     file = discord.File(f"meme.{extension}")
-    embed = discord.Embed(title = title, url = postLink, description = "** **")
+
+    img = Image.open(f"meme.{extension}")
+    img = img.convert('RGB')
+    r, g, b = average_color(img)
+    
+    embed = discord.Embed(title = title, url = postLink, description = "** **", color = discord.Color.from_rgb(int(r), int(g), int(b)))
     try:
         embed.set_image(url=f"attachment://meme.{extension}")
 
@@ -231,7 +230,6 @@ async def on_reaction_add(reaction, user):
 async def on_command_error(ctx, error):
     exception_error(error, f"{ctx} | Line 120, on_command_error() -> {error}")
 
-
 @client.command()
 @has_permissions(administrator=True)
 async def start(ctx, component : int):
@@ -299,13 +297,14 @@ async def kick(ctx, member: commands.MemberConverter, *, reason = ""):
 async def send_dm(ctx, member: discord.Member, *, content):
     channel = await member.create_dm()
     await channel.send(content)
+    await ctx.add_reaction("✅")
 
 @send_dm.error
 async def send_dm_error(ctx, error):
     exception_error(error, f"{ctx} | Line 133, start_error() -> {error}")
     
     if isinstance(error, commands.CheckFailure):
-        await ctx.send(f"lmfao, i don't work for stupid people like {ctx.author.mention}")
+        await ctx.send(f"They talk to each other while driving")
 
 @client.command(aliases=["si", "sysinfo"])
 async def system_info(ctx, embed : bool = True):
@@ -407,7 +406,7 @@ async def system_info(ctx, embed : bool = True):
 @client.command(
     aliases=["sm", "send"]
 )
-@commands.is_owner()
+@has_permissions(administrator=True)
 async def send_message(ctx, channel: commands.TextChannelConverter, *, message):
     print(channel)
     #channel = client.get_channel(channel.id)
@@ -438,6 +437,20 @@ async def info(ctx):
 
     await ctx.send(f"Here it is\nBoot Time - {boot}\nBattery{emoji} - {bat_percentage}\n\nCPU - {total_cores}\nFrequency - {current_frequency}\nUsage - {cpu_usage}%\n\nMemory - {total}\nUsage - {percentage}%\n\nDisk read - {read}\nDisk write - {write}")
 
+@client.command(
+    aliases = ["ca"]
+)
+@has_permissions(administrator=True)
+@commands.cooldown(1, 30, commands.BucketType.user)
+async def change_activity(ctx, *, activity):
+    await client.change_presence(activity=discord.Game(name = activity))
+    await ctx.add_reaction("✅")
+
+@client.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send(f'This command is on cooldown, you can use it in {round(error.retry_after, 2)}Sec')
+
 @client.event
 async def on_message(m):
     if m.author == client.user:
@@ -465,7 +478,7 @@ async def on_message(m):
                         await m.channel.send(f"Sentence without abuse\n```ml\n{non}\n```")
 
     if m.content.lower() == '!d bump':
-        asyncio.sleep(7200)
+        await asyncio.sleep(7200)
         #channel = client.get_channel(860573666974761030)
         await m.channel.send("<@&795538188655394817>\nTime for a bump\nPls write `!d bump`")
         #bump_reminder.start()
