@@ -7,6 +7,7 @@ if os.name != "nt":
     os.system("pip3 install psutil")
     os.system("pip3 install GPUtil")
     os.system("pip3 install tabulate")
+    os.system("pip3 install Pillow")
 
 else:
     print("naa")
