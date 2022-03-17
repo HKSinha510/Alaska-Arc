@@ -447,6 +447,10 @@ async def change_activity(ctx, *, activity):
     await client.change_presence(activity=discord.Game(name = activity))
     await ctx.add_reaction("✅")
 
+@client.command()
+async def art():
+    print("Lmfao")
+
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
