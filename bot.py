@@ -26,6 +26,7 @@ import psutil
 import GPUtil
 from tabulate import tabulate
 from PIL import Image
+from art import generate_art
 
 #variables
 intents = discord.Intents().all()
@@ -448,8 +449,10 @@ async def change_activity(ctx, *, activity):
     await ctx.add_reaction("✅")
 
 @client.command()
-async def art():
-    print("Lmfao")
+@commands.cooldown(1, 10, commands.BucketType.user)
+async def art(ctx):
+    generate_art()
+    await ctx.send(file=discord.File('Final.png'))
 
 @client.event
 async def on_command_error(ctx, error):
