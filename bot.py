@@ -135,12 +135,6 @@ async def edit_message():
     berlin = guild.get_member(854406530576023604)
     await msg.edit(content=f'__Status__\nNevada: {str(nevada.status).title()}\nNevada Premium: {str(nevada_premium.status).title()}\nAlaska: Me always online, never offline\nBerlin: {str(berlin.status).title()}')
 
-@tasks.loop(minutes=130)
-async def bump_reminder():
-    asyncio.sleep(7200)
-    channel = client.get_channel(860573666974761030)
-    await channel.send("<@&795538188655394817>\nTime for a bump\nPls write `!d bump`")
-
 @client.event
 async def on_connect():
     print("Lmao, just connected")
