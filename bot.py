@@ -88,25 +88,20 @@ async def morning_quote():
 @tasks.loop(minutes=30)
 async def meme():
     channel = client.get_channel(858690426117816321)
-    await channel.trigger_typing()
+    #await channel.trigger_typing()
 
-    subReddit = ['SaimanSays', 'memes', 'bakchodi', 'IndianDankMemes', 'me_irl']
+    subReddit = ['SaimanSays', 'memes', 'bakchodi', 'IndianDankMemes', 'me_irl', 'meme']
 
-    link = f'https://meme-api.herokuapp.com/gimme/{choice(subReddit)}'
+    link = f'https://meme-api.com/gimme/{choice(subReddit)}'
 
-    try:
-        response = requests.get(link)
-        json_data = json.loads(response.text)
-        title = json_data['title']
+    response = requests.get(link)
+    json_data = json.loads(response.text)
+    title = json_data['title']
     #description = json_data['description']
-        url = json_data['url']
-        postLink = json_data['postLink']
-        author = json_data['author']
-        votes = json_data['ups']
-    #spoilers = json_data['spoilers']
-
-    except:
-        embed = discord.Embed(title = "l")
+    url = json_data['url']
+    postLink = json_data['postLink']
+    author = json_data['author']
+    votes = json_data['ups']
 
     #print(data)
     myfile = requests.get(url)
@@ -194,7 +189,7 @@ async def on_message_edit(before, after):
         if word in after.content.lower():
             if after.author.id != 720308779220074557:
                 if after.author.id != 745849641395814521:
-                    await after.channel.trigger_typing()
+                    #await after.channel.()
                     await after.delete()
                     await after.channel.send(f"Holy frick, stop abusing {after.author.mention}")
                     non = after.content.replace(word, "")
@@ -478,7 +473,7 @@ async def on_message(m):
         if word in ms:
             if m.author.id != 720308779220074557:
                 if m.author.id != 745849641395814521:
-                    await m.channel.trigger_typing()
+                    #await m.channel.trigger_typing()
                     await m.delete()
                     await m.channel.send(f"Holy frick, stop abusing {m.author.mention}")
                     non = m.content.replace(word, "")
