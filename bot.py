@@ -14,6 +14,7 @@ else:
 
 import asyncio
 import discord
+from discord import app_commands
 from discord.ext import commands,tasks
 from discord.ext.commands import has_permissions
 import requests
@@ -31,6 +32,7 @@ from art import generate_art
 #variables
 intents = discord.Intents().all()
 client = commands.Bot(command_prefix = "_", intents=intents)
+#tree = app_commands.CommandTree(client)
 words = ['fuck', 'dick', 'shit', 'bastard', 'dickhead', 'asshole', 'penis', 'vagina', 'chut', 'maa ka chut', 'gand ', 'dead chat', 'dead server', 'ded chat', 'ded server', 'bitch', 'n word', 'harami', 'kutta', 'kutte']
 
 def time():
@@ -145,7 +147,8 @@ async def on_disconnect():
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name = 'catch-catch with wall'))
+    await client.tree.sync(guild=discord.Object(id='752904939029921912'))
+    await client.change_presence(activity=discord.Game(name = 'Painting'))
     channel = client.get_channel(835206762936008745)  #Alaska-Log 835206762936008745
 
     uname = platform.uname()
@@ -296,6 +299,16 @@ async def send_dm_error(ctx, error):
     
     if isinstance(error, commands.CheckFailure):
         await ctx.send(f"They talk to each other while driving")
+
+#SLASH COMMAND 🤯
+@client.tree.command(guild=discord.Object(id='752904939029921912'))
+@app_commands.describe(
+    first_value='The first value you want to add something to',
+    second_value='The value you want to add to the first value',
+)
+async def add(interaction: discord.Interaction, first_value: int, second_value: int):
+    """Adds two numbers together."""
+    await interaction.response.send_message(f'{first_value} + {second_value} = {first_value + second_value}')
 
 @client.command(aliases=["si", "sysinfo"])
 async def system_info(ctx, embed : bool = True):
