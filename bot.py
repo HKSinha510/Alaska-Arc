@@ -1,6 +1,24 @@
 import os
 
-if os.name != "nt":
+try:
+    import asyncio
+    import discord
+    from discord import app_commands
+    from discord.ext import commands,tasks
+    from discord.ext.commands import has_permissions
+    import requests
+    import json
+    from random import choice
+    from datetime import datetime
+    import pytz
+    import platform
+    import psutil
+    import GPUtil
+    from tabulate import tabulate
+    from PIL import Image
+    from art import generate_art
+
+except:
     os.system("pip3 install discord")
     os.system("pip3 install requests")
     os.system("pip3 install pytz")
@@ -9,25 +27,6 @@ if os.name != "nt":
     os.system("pip3 install tabulate")
     os.system("pip3 install Pillow")
 
-else:
-    print("naa")
-
-import asyncio
-import discord
-from discord import app_commands
-from discord.ext import commands,tasks
-from discord.ext.commands import has_permissions
-import requests
-import json
-from random import choice
-from datetime import datetime
-import pytz
-import platform
-import psutil
-import GPUtil
-from tabulate import tabulate
-from PIL import Image
-from art import generate_art
 
 #variables
 intents = discord.Intents().all()
