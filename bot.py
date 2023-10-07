@@ -93,7 +93,7 @@ async def meme():
     channel = client.get_channel(858690426117816321)
     #await channel.trigger_typing()
 
-    subReddit = ['SaimanSays', 'memes', 'bakchodi', 'IndianDankMemes', 'me_irl', 'meme']
+    subReddit = ['SaimanSays', 'memes', 'bakchodi', 'IndianDankMemes', 'me_irl', 'meme', "unexpected", "meme", "memes", "CarryMinati", "dankinindia", "desimemes"]
 
     link = f'https://meme-api.com/gimme/{choice(subReddit)}'
 
