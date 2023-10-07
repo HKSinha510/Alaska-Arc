@@ -427,29 +427,22 @@ async def send_message(ctx, channel: commands.TextChannelConverter, *, message):
     await channel.send(message)
 
 @client.command(
-    aliases = ["extension 1", "ext1"]
+    aliases = ["ext", "info"]
 )
-async def info(ctx):
-    response = requests.get("https://py-flask-server-for-alaska-intigration.hardikkumarkuma.repl.co/alaska")
-    json_data = json.loads(response.text)
-    boot = json_data['boot']
-    bat_percentage = json_data['bat_percentage']
-    power = json_data['power']
-    total_cores = json_data['total_cores']
-    current_frequency = json_data['current_frequency']
-    cpu_usage = json_data['cpu_usage']
-    total = json_data['total']
-    percentage = json_data['percentage']
-    read = json_data['read']
-    write = json_data['write']
-    
-    if power == "True":
-        emoji = "🔋"
+@commands.cooldown(2, 60, commands.BucketType.user)
+async def extension(ctx):
+    try:
+        msg = ""
+        response = requests.get("http://hksinha.webhop.me:8800/systeminfo", timeout=5)
+        json_data = json.loads(response.text)
+        for key, value in json_data.items():
+            msg += f"{key}: {value}\n"
 
-    else:
-        emoji = ""
-
-    await ctx.send(f"Here it is\nBoot Time - {boot}\nBattery{emoji} - {bat_percentage}\n\nCPU - {total_cores}\nFrequency - {current_frequency}\nUsage - {cpu_usage}%\n\nMemory - {total}\nUsage - {percentage}%\n\nDisk read - {read}\nDisk write - {write}")
+    except Exception as e:
+        exception_error(e, "extension, ln 441")
+        msg = "Offline"
+        
+    await ctx.send(msg)
 
 @client.command(
     aliases = ["ca"]
