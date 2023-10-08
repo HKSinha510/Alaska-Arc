@@ -18,7 +18,8 @@ try:
     from PIL import Image
     from art import generate_art
 
-except:
+except ImportError:
+    print("Import failed, intalling modules")
     os.system("pip3 install discord")
     os.system("pip3 install requests")
     os.system("pip3 install pytz")
@@ -26,6 +27,9 @@ except:
     os.system("pip3 install GPUtil")
     os.system("pip3 install tabulate")
     os.system("pip3 install Pillow")
+
+else:
+    print("try out, except out, else in")
 
 
 #variables
