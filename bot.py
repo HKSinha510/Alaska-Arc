@@ -552,4 +552,4 @@ async def on_message(m):
 
     await client.process_commands(m)
 
-client.run('NzkzMDkxNjk3ODI3MTE5MTM0.X-nOMw.NJ4y3P78QLcKn-zj0y1ay4-xHco')
+client.run('my-bot-token')
