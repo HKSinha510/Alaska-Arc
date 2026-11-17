@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 try:
     import asyncio
@@ -17,27 +18,26 @@ try:
     from tabulate import tabulate
     from PIL import Image
     from art import generate_art
+    from dotenv import load_dotenv
 
-except ImportError:
-    print("Import failed, intalling modules")
-    os.system("pip3 install discord")
-    os.system("pip3 install requests")
-    os.system("pip3 install pytz")
-    os.system("pip3 install psutil")
-    os.system("pip3 install GPUtil")
-    os.system("pip3 install tabulate")
-    os.system("pip3 install Pillow")
-
-else:
-    print("try out, except out, else in")
-
+except ImportError as e:
+    print(f"{e.name} import failed, intalling all modules")
+    subprocess.run(['pip3', 'install', 'discord'])
+    subprocess.run(['pip3', 'install', 'requests'])
+    subprocess.run(['pip3', 'install', 'pytz'])
+    subprocess.run(['pip3', 'install', 'psutil'])
+    subprocess.run(['pip3', 'install', 'GPUtil-fix'])       # gputil might get depricated
+    subprocess.run(['pip3', 'install', 'tabulate'])
+    subprocess.run(['pip3', 'install', 'Pillow'])
+    subprocess.run(['pip3', 'install', 'python-dotenv'])
+    exit()
 
 #variables
 intents = discord.Intents().all()
 client = commands.Bot(command_prefix = "_", intents=intents)
 #tree = app_commands.CommandTree(client)
-words = ['fuck', 'dick', 'shit', 'bastard', 'dickhead', 'asshole', 'penis', 'vagina', 'chut', 'maa ka chut', 'gand ', 'dead chat', 'dead server', 'ded chat', 'ded server', 'bitch', 'n word', 'harami', 'kutta', 'kutte']
-
+words = ['fuck', 'dick', 'bastard', 'dickhead', 'asshole', 'penis', 'vagina', 'chut', 'maa ka chut', 'gand ', 'harami']
+load_dotenv()
 
 def time():
     pst = pytz.timezone('Asia/Kolkata')
@@ -552,4 +552,4 @@ async def on_message(m):
 
     await client.process_commands(m)
 
-client.run('my-bot-token')
+client.run(os.getenv("TOKEN"))

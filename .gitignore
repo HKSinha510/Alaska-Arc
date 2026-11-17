@@ -6,3 +6,4 @@
 *.gif
 cartoon.py
 .vscode/
+.env
